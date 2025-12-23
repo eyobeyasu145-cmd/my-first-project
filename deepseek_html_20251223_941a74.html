@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Platter | Sensation & Perception Study App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #166088;
+            --accent: #ff6b6b;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #51cf66;
+            --warning: #ff922b;
+            --platter-bg: #fff9f0;
+            --platter-border: #e9d8c8;
+            --info: #339af0;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-bottom: 5px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--success));
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: var(--accent);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Batch Owners Section */
+        .batch-owners {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px auto;
+            max-width: 800px;
+            text-align: center;
+            border: 2px solid var(--info);
+            box-shadow: 0 5px 15px rgba(51, 154, 240, 0.1);
+        }
+        
+        .batch-owners h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .telegram-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #0088cc;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .telegram-link:hover {
+            background: #0077b5;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 136, 204, 0.2);
+        }
+        
+        /* App Controls */
+        .app-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .mode-btn {
+            padding: 15px 25px;
+            background: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            color: var(--dark);
+        }
+        
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(74, 111, 165, 0.3);
+        }
+        
+        .mode-btn:hover:not(.active) {
+            background: #f1f5f9;
+            transform: translateY(-3px);
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Platter Design */
+        .platter {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--platter-bg);
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.8) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(255,255,255,0.8) 2px, transparent 2px);
+            background-size: 50px 50px;
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Flashcard Mode */
+        .flashcard-container {
+            position: relative;
+            z-index: 1;
+            perspective: 1000px;
+            height: 400px;
+            display: none;
+        }
+        
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            cursor: pointer;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px;
+            overflow: hidden;
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .flashcard-back {
+            background: white;
+            color: var(--dark);
+            transform: rotateY(180deg);
+            border: 3px solid var(--primary);
+        }
+        
+        .card-number {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .question {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+        
+        .hint {
+            font-size: 1rem;
+            opacity: 0.8;
+            font-style: italic;
+            margin-top: 20px;
+        }
+        
+        .answer {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .definition {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid var(--accent);
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        .flashcard-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        /* Quiz Mode */
+        .quiz-container {
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .quiz-question {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            color: var(--secondary);
+            line-height: 1.4;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        @media (min-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .option {
+            padding: 20px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .option:hover {
+            border-color: var(--primary);
+            background: #f8f9ff;
+        }
+        
+        .option.selected {
+            border-color: var(--primary);
+            background: rgba(74, 111, 165, 0.1);
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(81, 207, 102, 0.1);
+        }
+        
+        .option.incorrect {
+            border-color: var(--accent);
+            background: rgba(255, 107, 107, 0.1);
+        }
+        
+        .option-label {
+            width: 40px;
+            height: 40px;
+            background: #f1f3f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        /* Definition Display in Quiz */
+        .definition-display {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 5px solid var(--info);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .definition-display h4 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .definition-content {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+        
+        /* Summary Mode */
+        .summary-container {
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .summary-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .summary-header h2 {
+            color: var(--secondary);
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .summary-card h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .key-terms {
+            list-style: none;
+        }
+        
+        .key-terms li {
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .key-terms li:last-child {
+            border-bottom: none;
+        }
+        
+        .term {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Stats */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .stat-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            min-width: 200px;
+            border-top: 5px solid var(--accent);
+        }
+        
+        .stat-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+        
+        .tip-box {
+            background: linear-gradient(135deg, #fff9db 0%, #ffec99 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 5px solid var(--warning);
+        }
+        
+        .tip-box h3 {
+            color: #e67700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 25px;
+            }
+            
+            .question, .quiz-question {
+                font-size: 1.5rem;
+            }
+            
+            .mode-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+            
+            .batch-owners {
+                padding: 15px;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 15px 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #40c057;
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background: #ff5252;
+        }
+        
+        .btn-info {
+            background: var(--info);
+        }
+        
+        .btn-info:hover {
+            background: #228be6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> Brain Platter: Sensation & Perception</h1>
+            <p class="subtitle">Chapter 2 Study App - Interactive flashcards, quizzes, and summaries to master key concepts</p>
+            
+            <!-- Batch Owners Section -->
+            <div class="batch-owners">
+                <h3><i class="fas fa-users"></i> NS11 Fresh Batch Owners</h3>
+                <p>Join our Telegram group for discussions, study materials, and updates!</p>
+                <a href="https://t.me/NS11fresh" target="_blank" class="telegram-link">
+                    <i class="fab fa-telegram"></i> Join NS11 Fresh on Telegram
+                </a>
+            </div>
+        </div>
+        
+        <!-- App Controls -->
+        <div class="app-controls">
+            <button class="mode-btn active" data-mode="flashcards">
+                <i class="fas fa-layer-group"></i> Flashcards
+            </button>
+            <button class="mode-btn" data-mode="quiz">
+                <i class="fas fa-question-circle"></i> Quiz Mode
+            </button>
+            <button class="mode-btn" data-mode="summary">
+                <i class="fas fa-book-open"></i> Chapter Summary
+            </button>
+            <button class="mode-btn" data-mode="review">
+                <i class="fas fa-chart-bar"></i> Progress Review
+            </button>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Platter Background -->
+            <div class="platter"></div>
+            
+            <!-- Flashcard Mode -->
+            <div class="flashcard-container" id="flashcard-mode">
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-front">
+                        <div class="card-number">Card 1/25</div>
+                        <div class="question" id="card-question">Sensation refers to:</div>
+                        <div class="hint">Click the card to reveal the answer</div>
+                    </div>
+                    <div class="flashcard-back">
+                        <div class="card-number">Answer</div>
+                        <div class="answer" id="card-answer">C. Detection of stimuli by sense organs</div>
+                        <div class="definition" id="card-definition">
+                            <strong>Definition:</strong> Sensation is the process by which sense organs detect physical stimuli from the environment.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flashcard-controls">
+                    <button class="btn btn-outline" id="prev-card">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <button class="btn" id="flip-card">
+                        <i class="fas fa-sync-alt"></i> Flip Card
+                    </button>
+                    <button class="btn" id="next-card">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quiz Mode -->
+            <div class="quiz-container" id="quiz-mode">
+                <div class="quiz-header">
+                    <h2>Chapter 2 Quiz</h2>
+                    <div class="score">Score: <span id="score-value">0</span>/25</div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress" id="quiz-progress"></div>
+                </div>
+                
+                <div class="quiz-question" id="quiz-question">Sensation refers to:</div>
+                
+                <div class="options-container" id="options-container">
+                    <!-- Options will be generated by JavaScript -->
+                </div>
+                
+                <!-- Definition Display Area -->
+                <div class="definition-display" id="definition-display">
+                    <h4><i class="fas fa-info-circle"></i> Definition</h4>
+                    <div class="definition-content" id="definition-content">
+                        <!-- Definition will be displayed here -->
+                    </div>
+                </div>
+                
+                <div class="quiz-controls">
+                    <button class="btn btn-outline" id="prev-question">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <button class="btn" id="check-answer">
+                        <i class="fas fa-check-circle"></i> Check Answer
+                    </button>
+                    <button class="btn btn-success" id="next-question" style="display: none;">
+                        Next Question <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Summary Mode -->
+            <div class="summary-container" id="summary-mode">
+                <div class="summary-header">
+                    <h2><i class="fas fa-book"></i> Chapter 2 Summary</h2>
+                    <p>Key concepts and definitions from Sensation & Perception</p>
+                </div>
+                
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h3><i class="fas fa-eye"></i> Sensation Basics</h3>
+                        <ul class="key-terms">
+                            <li><span class="term">Sensation</span> Detection of stimuli</li>
+                            <li><span class="term">Perception</span> Interpretation of stimuli</li>
+                            <li><span class="term">Transduction</span> Energy conversion</li>
+                            <li><span class="term">Absolute Threshold</span> Minimum detectable stimulus</li>
+                            <li><span class="term">Difference Threshold</span> Smallest detectable difference</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <h3><i class="fas fa-ear-listen"></i> Senses</h3>
+                        <ul class="key-terms">
+                            <li><span class="term">Vision</span> Eye detects light</li>
+                            <li><span class="term">Audition</span> Hearing sense</li>
+                            <li><span class="term">Olfaction</span> Sense of smell</li>
+                            <li><span class="term">Gustation</span> Sense of taste</li>
+                            <li><span class="term">Vestibular</span> Balance sense</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <h3><i class="fas fa-brain"></i> Perception Concepts</h3>
+                        <ul class="key-terms">
+                            <li><span class="term">Gestalt Psychology</span> Whole experience</li>
+                            <li><span class="term">Figure-Ground</span> Object vs background</li>
+                            <li><span class="term">Perceptual Constancy</span> Stable perception</li>
+                            <li><span class="term">Depth Perception</span> Judging distance</li>
+                            <li><span class="term">Illusion</span> Misinterpretation of stimuli</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="tip-box">
+                    <h3><i class="fas fa-lightbulb"></i> Midterm Tips</h3>
+                    <p>Focus on: Sensation vs Perception, Thresholds (Absolute & Difference), Gestalt laws, Illusion vs Hallucination, Sensory Adaptation, and Perceptual Constancy.</p>
+                </div>
+            </div>
+            
+            <!-- Review Mode -->
+            <div class="summary-container" id="review-mode" style="display: none;">
+                <div class="summary-header">
+                    <h2><i class="fas fa-chart-line"></i> Progress Review</h2>
+                    <p>Track your learning progress and study statistics</p>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <div class="stat-value" id="cards-studied">0</div>
+                        <p>Cards Studied</p>
+                    </div>
+                    
+                    <div class="stat-box">
+                        <div class="stat-value" id="quiz-score">0%</div>
+                        <p>Quiz Score</p>
+                    </div>
+                    
+                    <div class="stat-box">
+                        <div class="stat-value" id="time-spent">0 min</div>
+                        <p>Study Time</p>
+                    </div>
+                    
+                    <div class="stat-box">
+                        <div class="stat-value" id="mastery-level">Beginner</div>
+                        <p>Mastery Level</p>
+                    </div>
+                </div>
+                
+                <div class="tip-box" style="margin-top: 40px;">
+                    <h3><i class="fas fa-rocket"></i> Study Recommendations</h3>
+                    <p>Based on your progress, we recommend focusing on: <span id="focus-area">Sensation vs Perception distinction</span>. Try the quiz mode to test your knowledge!</p>
+                </div>
+                
+                <!-- Batch Info in Review Mode -->
+                <div class="batch-owners" style="margin-top: 40px;">
+                    <h3><i class="fas fa-users"></i> Connect with Batchmates</h3>
+                    <p>Join the NS11 Fresh Telegram group to discuss questions, share insights, and study together!</p>
+                    <a href="https://t.me/NS11fresh" target="_blank" class="btn btn-info" style="display: inline-flex; margin-top: 15px;">
+                        <i class="fab fa-telegram"></i> Join Telegram Group
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Brain Platter App | Psychology Chapter 2: Sensation & Perception | Study Tool</p>
+            <p>NS11 Fresh Batch | Telegram: <a href="https://t.me/NS11fresh" target="_blank" style="color: var(--info);">t.me/NS11fresh</a></p>
+        </div>
+    </div>
+
+    <script>
+        // App Data - Questions from the chapter
+        const questions = [
+            {
+                question: "Sensation refers to:",
+                options: [
+                    "A. Interpretation of stimuli",
+                    "B. Meaning given to experience",
+                    "C. Detection of stimuli by sense organs",
+                    "D. Learning process"
+                ],
+                answer: "C",
+                explanation: "Sensation is the process by which sense organs detect physical stimuli from the environment."
+            },
+            {
+                question: "Perception is best defined as:",
+                options: [
+                    "A. Receiving stimuli",
+                    "B. Organizing and interpreting sensory information",
+                    "C. Stimulus detection",
+                    "D. Reflex action"
+                ],
+                answer: "B",
+                explanation: "Perception is the process of organizing and interpreting sensory information to give it meaning."
+            },
+            {
+                question: "The sense organ for vision is:",
+                options: [
+                    "A. Ear",
+                    "B. Nose",
+                    "C. Eye",
+                    "D. Skin"
+                ],
+                answer: "C",
+                explanation: "The eye detects light and enables vision."
+            },
+            {
+                question: "Which sense is related to hearing?",
+                options: [
+                    "A. Vision",
+                    "B. Olfaction",
+                    "C. Audition",
+                    "D. Gustation"
+                ],
+                answer: "C",
+                explanation: "Audition is the sense of hearing."
+            },
+            {
+                question: "The process of converting physical energy into neural signals is called:",
+                options: [
+                    "A. Adaptation",
+                    "B. Transduction",
+                    "C. Perception",
+                    "D. Threshold"
+                ],
+                answer: "B",
+                explanation: "Transduction is the conversion of physical energy into nerve impulses."
+            },
+            {
+                question: "Absolute threshold is:",
+                options: [
+                    "A. Maximum stimulus",
+                    "B. Difference between two stimuli",
+                    "C. Minimum detectable stimulus",
+                    "D. Adaptation level"
+                ],
+                answer: "C",
+                explanation: "Absolute threshold is the minimum intensity of a stimulus that can be detected."
+            },
+            {
+                question: "Difference threshold refers to:",
+                options: [
+                    "A. Total sensation",
+                    "B. Change in perception",
+                    "C. Minimum difference between two stimuli",
+                    "D. Sensory adaptation"
+                ],
+                answer: "C",
+                explanation: "Difference threshold is the smallest detectable difference between two stimuli."
+            },
+            {
+                question: "Weber's Law states that:",
+                options: [
+                    "A. Perception is subjective",
+                    "B. Sensation depends on adaptation",
+                    "C. Change in stimulus is proportional",
+                    "D. Stimuli are constant"
+                ],
+                answer: "C",
+                explanation: "Weber's Law states that the noticeable difference between stimuli is proportional to the original stimulus."
+            },
+            {
+                question: "Sensory adaptation is:",
+                options: [
+                    "A. Increased sensitivity",
+                    "B. Reduced sensitivity to constant stimuli",
+                    "C. Learning process",
+                    "D. Perceptual illusion"
+                ],
+                answer: "B",
+                explanation: "Sensory adaptation is reduced sensitivity to an unchanging stimulus over time."
+            },
+            {
+                question: "Which sense helps in identifying smell?",
+                options: [
+                    "A. Gustation",
+                    "B. Audition",
+                    "C. Olfaction",
+                    "D. Vision"
+                ],
+                answer: "C",
+                explanation: "Olfaction is the sense of smell."
+            }
+        ];
+
+        // Additional questions for the full set (25 total)
+        const additionalQuestions = [
+            {
+                question: "Gustation refers to the sense of:",
+                options: [
+                    "A. Touch",
+                    "B. Taste",
+                    "C. Smell",
+                    "D. Hearing"
+                ],
+                answer: "B",
+                explanation: "Gustation is the sense of taste."
+            },
+            {
+                question: "The skin sense includes:",
+                options: [
+                    "A. Vision only",
+                    "B. Hearing only",
+                    "C. Touch, pain, temperature",
+                    "D. Taste and smell"
+                ],
+                answer: "C",
+                explanation: "Skin senses include touch, pain, pressure, and temperature."
+            },
+            {
+                question: "Which sense helps maintain balance?",
+                options: [
+                    "A. Vision",
+                    "B. Olfaction",
+                    "C. Vestibular sense",
+                    "D. Gustation"
+                ],
+                answer: "C",
+                explanation: "Vestibular sense helps maintain balance and body orientation."
+            },
+            {
+                question: "The perception of body position is called:",
+                options: [
+                    "A. Vestibular sense",
+                    "B. Kinesthetic sense",
+                    "C. Visual sense",
+                    "D. Auditory sense"
+                ],
+                answer: "B",
+                explanation: "Kinesthetic sense provides information about body movement and position."
+            },
+            {
+                question: "Perceptual constancy means:",
+                options: [
+                    "A. Changing perception",
+                    "B. Stable perception despite change",
+                    "C. Sensory adaptation",
+                    "D. Illusion"
+                ],
+                answer: "B",
+                explanation: "Perceptual constancy is perceiving objects as stable despite changes in stimuli."
+            },
+            {
+                question: "Size constancy refers to:",
+                options: [
+                    "A. Color stability",
+                    "B. Shape recognition",
+                    "C. Perception of size as constant",
+                    "D. Illusion"
+                ],
+                answer: "C",
+                explanation: "Size constancy means perceiving an object as the same size regardless of distance."
+            },
+            {
+                question: "Gestalt psychology emphasizes:",
+                options: [
+                    "A. Individual parts",
+                    "B. Whole experience",
+                    "C. Reflex actions",
+                    "D. Learning"
+                ],
+                answer: "B",
+                explanation: "Gestalt psychology focuses on perception as a whole rather than parts."
+            },
+            {
+                question: "Figure-ground perception means:",
+                options: [
+                    "A. Depth perception",
+                    "B. Color vision",
+                    "C. Separating object from background",
+                    "D. Sensory adaptation"
+                ],
+                answer: "C",
+                explanation: "Figure-ground perception is the ability to distinguish an object from its background."
+            },
+            {
+                question: "Illusion is:",
+                options: [
+                    "A. Correct perception",
+                    "B. False sensory experience",
+                    "C. Misinterpretation of stimuli",
+                    "D. Hallucination"
+                ],
+                answer: "C",
+                explanation: "An illusion is a misinterpretation of a real external stimulus."
+            },
+            {
+                question: "Hallucination is:",
+                options: [
+                    "A. Real stimulus",
+                    "B. Imaginary perception",
+                    "C. Sensory adaptation",
+                    "D. Threshold"
+                ],
+                answer: "B",
+                explanation: "Hallucination is perception without an external stimulus."
+            },
+            {
+                question: "Depth perception helps us judge:",
+                options: [
+                    "A. Color",
+                    "B. Distance",
+                    "C. Taste",
+                    "D. Smell"
+                ],
+                answer: "B",
+                explanation: "Depth perception allows us to judge distance and space."
+            },
+            {
+                question: "Monocular cues require:",
+                options: [
+                    "A. Two eyes",
+                    "B. No eyes",
+                    "C. One eye",
+                    "D. Brain only"
+                ],
+                answer: "C",
+                explanation: "Monocular cues are depth cues that require only one eye."
+            },
+            {
+                question: "Binocular cues depend on:",
+                options: [
+                    "A. One eye",
+                    "B. Two eyes",
+                    "C. Ear",
+                    "D. Skin"
+                ],
+                answer: "B",
+                explanation: "Binocular cues are depth cues that require both eyes."
+            },
+            {
+                question: "Perception is influenced by:",
+                options: [
+                    "A. Experience",
+                    "B. Motivation",
+                    "C. Expectations",
+                    "D. All of the above"
+                ],
+                answer: "D",
+                explanation: "Perception is shaped by experience, motivation, and expectations."
+            },
+            {
+                question: "Sensation occurs at the level of:",
+                options: [
+                    "A. Brain only",
+                    "B. Sense organs",
+                    "C. Muscles",
+                    "D. Hormones"
+                ],
+                answer: "B",
+                explanation: "Sensation begins at the sense organ level."
+            }
+        ];
+
+        // Combine all questions
+        questions.push(...additionalQuestions);
+        
+        // App State
+        let currentMode = 'flashcards';
+        let currentCardIndex = 0;
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let selectedOption = null;
+        let answerChecked = false;
+        let cardsStudied = 0;
+        let studyTime = 0;
+        
+        // DOM Elements
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        const flashcardMode = document.getElementById('flashcard-mode');
+        const quizMode = document.getElementById('quiz-mode');
+        const summaryMode = document.getElementById('summary-mode');
+        const reviewMode = document.getElementById('review-mode');
+        const flashcard = document.getElementById('flashcard');
+        const cardQuestion = document.getElementById('card-question');
+        const cardAnswer = document.getElementById('card-answer');
+        const cardDefinition = document.getElementById('card-definition');
+        const prevCardBtn = document.getElementById('prev-card');
+        const nextCardBtn = document.getElementById('next-card');
+        const flipCardBtn = document.getElementById('flip-card');
+        const quizQuestion = document.getElementById('quiz-question');
+        const optionsContainer = document.getElementById('options-container');
+        const prevQuestionBtn = document.getElementById('prev-question');
+        const nextQuestionBtn = document.getElementById('next-question');
+        const checkAnswerBtn = document.getElementById('check-answer');
+        const scoreValue = document.getElementById('score-value');
+        const quizProgress = document.getElementById('quiz-progress');
+        const definitionDisplay = document.getElementById('definition-display');
+        const definitionContent = document.getElementById('definition-content');
+        const cardsStudiedElement = document.getElementById('cards-studied');
+        const quizScoreElement = document.getElementById('quiz-score');
+        const timeSpentElement = document.getElementById('time-spent');
+        const masteryLevelElement = document.getElementById('mastery-level');
+        const focusAreaElement = document.getElementById('focus-area');
+        
+        // Initialize the app
+        function initApp() {
+            // Set up event listeners
+            modeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    switchMode(button.dataset.mode);
+                });
+            });
+            
+            // Flashcard events
+            flashcard.addEventListener('click', flipFlashcard);
+            prevCardBtn.addEventListener('click', showPreviousCard);
+            nextCardBtn.addEventListener('click', showNextCard);
+            flipCardBtn.addEventListener('click', flipFlashcard);
+            
+            // Quiz events
+            prevQuestionBtn.addEventListener('click', showPreviousQuestion);
+            nextQuestionBtn.addEventListener('click', showNextQuestion);
+            checkAnswerBtn.addEventListener('click', checkAnswer);
+            
+            // Load first card and question
+            loadCard(currentCardIndex);
+            loadQuestion(currentQuizIndex);
+            
+            // Update progress every minute
+            setInterval(updateStudyTime, 60000);
+            
+            // Initialize stats
+            updateStats();
+        }
+        
+        // Switch between app modes
+        function switchMode(mode) {
+            // Update active button
+            modeButtons.forEach(button => {
+                if (button.dataset.mode === mode) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+            
+            // Hide all modes
+            flashcardMode.style.display = 'none';
+            quizMode.style.display = 'none';
+            summaryMode.style.display = 'none';
+            reviewMode.style.display = 'none';
+            
+            // Show selected mode
+            currentMode = mode;
+            
+            switch(mode) {
+                case 'flashcards':
+                    flashcardMode.style.display = 'block';
+                    flashcardMode.classList.add('fade-in');
+                    break;
+                case 'quiz':
+                    quizMode.style.display = 'block';
+                    quizMode.classList.add('fade-in');
+                    resetQuizState();
+                    break;
+                case 'summary':
+                    summaryMode.style.display = 'block';
+                    summaryMode.classList.add('fade-in');
+                    break;
+                case 'review':
+                    reviewMode.style.display = 'block';
+                    reviewMode.classList.add('fade-in');
+                    updateStats();
+                    break;
+            }
+        }
+        
+        // Flashcard functions
+        function loadCard(index) {
+            if (index >= 0 && index < questions.length) {
+                const question = questions[index];
+                cardQuestion.textContent = question.question;
+                cardAnswer.textContent = `${question.answer}. ${question.options[question.answer.charCodeAt(0) - 65]}`;
+                cardDefinition.innerHTML = `<strong>Definition:</strong> ${question.explanation}`;
+                
+                // Update card number
+                document.querySelector('.card-number').textContent = `Card ${index + 1}/${questions.length}`;
+                
+                // Reset card to front
+                flashcard.classList.remove('flipped');
+                
+                // Track cards studied
+                if (index > cardsStudied) {
+                    cardsStudied = index + 1;
+                }
+            }
+        }
+        
+        function showPreviousCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                loadCard(currentCardIndex);
+            }
+        }
+        
+        function showNextCard() {
+            if (currentCardIndex < questions.length - 1) {
+                currentCardIndex++;
+                loadCard(currentCardIndex);
+            }
+        }
+        
+        function flipFlashcard() {
+            flashcard.classList.toggle('flipped');
+        }
+        
+        // Quiz functions
+        function loadQuestion(index) {
+            if (index >= 0 && index < questions.length) {
+                const question = questions[index];
+                quizQuestion.textContent = question.question;
+                
+                // Clear previous options
+                optionsContainer.innerHTML = '';
+                
+                // Create new options
+                question.options.forEach((optionText, i) => {
+                    const option = document.createElement('div');
+                    option.className = 'option';
+                    option.dataset.value = String.fromCharCode(65 + i); // A, B, C, D
+                    
+                    const optionLabel = document.createElement('div');
+                    optionLabel.className = 'option-label';
+                    optionLabel.textContent = String.fromCharCode(65 + i);
+                    
+                    const optionTextElement = document.createElement('div');
+                    optionTextElement.textContent = optionText;
+                    
+                    option.appendChild(optionLabel);
+                    option.appendChild(optionTextElement);
+                    
+                    option.addEventListener('click', () => selectOption(option));
+                    optionsContainer.appendChild(option);
+                });
+                
+                // Reset UI state
+                selectedOption = null;
+                answerChecked = false;
+                checkAnswerBtn.style.display = 'flex';
+                nextQuestionBtn.style.display = 'none';
+                definitionDisplay.style.display = 'none';
+                
+                // Update progress bar
+                const progress = ((index + 1) / questions.length) * 100;
+                quizProgress.style.width = `${progress}%`;
+                
+                // Update question counter
+                document.querySelector('.quiz-header h2').textContent = `Chapter 2 Quiz (${index + 1}/${questions.length})`;
+            }
+        }
+        
+        function selectOption(optionElement) {
+            if (answerChecked) return;
+            
+            // Remove selected class from all options
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            optionElement.classList.add('selected');
+            selectedOption = optionElement.dataset.value;
+        }
+        
+        function checkAnswer() {
+            if (!selectedOption) {
+                alert('Please select an answer first!');
+                return;
+            }
+            
+            answerChecked = true;
+            const currentQuestion = questions[currentQuizIndex];
+            const isCorrect = selectedOption === currentQuestion.answer;
+            
+            // Highlight correct and incorrect answers
+            document.querySelectorAll('.option').forEach(option => {
+                const optionValue = option.dataset.value;
+                if (optionValue === currentQuestion.answer) {
+                    option.classList.add('correct');
+                } else if (optionValue === selectedOption && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+                
+                // Disable further clicks
+                option.style.pointerEvents = 'none';
+            });
+            
+            // Update score if correct
+            if (isCorrect) {
+                quizScore++;
+                scoreValue.textContent = quizScore;
+            }
+            
+            // Show definition
+            showDefinition(currentQuestion.explanation);
+            
+            // Show next question button
+            checkAnswerBtn.style.display = 'none';
+            nextQuestionBtn.style.display = 'flex';
+        }
+        
+        function showDefinition(explanation) {
+            definitionContent.textContent = explanation;
+            definitionDisplay.style.display = 'block';
+        }
+        
+        function showPreviousQuestion() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                loadQuestion(currentQuizIndex);
+                
+                // Update score display
+                scoreValue.textContent = quizScore;
+            }
+        }
+        
+        function showNextQuestion() {
+            if (currentQuizIndex < questions.length - 1) {
+                currentQuizIndex++;
+                loadQuestion(currentQuizIndex);
+                
+                // Update score display
+                scoreValue.textContent = quizScore;
+            } else {
+                // Quiz completed
+                alert(`Quiz completed! Your score: ${quizScore}/${questions.length}`);
+                switchMode('review');
+            }
+        }
+        
+        function resetQuizState() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            selectedOption = null;
+            answerChecked = false;
+            scoreValue.textContent = '0';
+            loadQuestion(currentQuizIndex);
+        }
+        
+        // Stats and progress functions
+        function updateStudyTime() {
+            studyTime++;
+            updateStats();
+        }
+        
+        function updateStats() {
+            // Update cards studied
+            cardsStudiedElement.textContent = cardsStudied;
+            
+            // Calculate quiz score percentage
+            const quizPercentage = questions.length > 0 ? Math.round((quizScore / questions.length) * 100) : 0;
+            quizScoreElement.textContent = `${quizPercentage}%`;
+            
+            // Update time spent
+            timeSpentElement.textContent = `${studyTime} min`;
+            
+            // Calculate mastery level
+            let masteryLevel = "Beginner";
+            if (quizPercentage >= 80 && cardsStudied >= 20) {
+                masteryLevel = "Expert";
+            } else if (quizPercentage >= 60 || cardsStudied >= 10) {
+                masteryLevel = "Intermediate";
+            }
+            masteryLevelElement.textContent = masteryLevel;
+            
+            // Suggest focus area
+            let focusArea = "Sensation vs Perception distinction";
+            if (quizPercentage < 60) {
+                focusArea = "Key definitions and thresholds";
+            } else if (quizPercentage < 80) {
+                focusArea = "Applying concepts to examples";
+            }
+            focusAreaElement.textContent = focusArea;
+        }
+        
+        // Initialize the app when the page loads
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
